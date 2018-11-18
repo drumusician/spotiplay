@@ -4,18 +4,16 @@ Play a preview track from an artist on Spotify through the commandline
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `spotiplay` to your list of dependencies in `mix.exs`:
+Install the prebuilt escript:
 
-```elixir
-def deps do
-  [
-    {:spotiplay, "~> 0.1.0"}
-  ]
-end
 ```
+mix escript.install https://github.com/drumusician/spotiplay/raw/master/spotiplay
+```
+Make sure the location of the script is in your PATH
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/spotiplay](https://hexdocs.pm/spotiplay).
+## Usage
+
+```
+spotiplay bruno mars
+```
 
