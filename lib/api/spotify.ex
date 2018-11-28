@@ -3,23 +3,32 @@ defmodule Spotiplay.Api.Spotify do
 
   use HTTPoison.Base
 
-  @spec get_random_track(any()) :: any()
   def get_random_track(artist) do
     query_string = URI.encode_query(%{q: artist, type: "artist"})
     result = __MODULE__.get!("search?#{query_string}").body["artists"]["items"]
-    case result do
+
+    top_tracks =
+      case result do
+        [] ->
+          nil
+
+        _ ->
+          result
+          |> List.first()
+          |> Map.get("id")
+          |> get_top_tracks
+      end
+
+    case top_tracks do
       [] ->
         nil
+
       _ ->
-        result
-        |> List.first
-        |> Map.get("id")
-        |> get_top_tracks
-        |> Enum.random
+        top_tracks
+        |> Enum.random()
     end
   end
 
-  @spec get_top_tracks(any()) :: any()
   def get_top_tracks(artist_id) do
     __MODULE__.get!("artists/#{artist_id}/top-tracks?country=NL").body["tracks"]
   end
@@ -38,16 +47,17 @@ defmodule Spotiplay.Api.Spotify do
   end
 
   def access_token do
-
     client_id = Application.get_env(:spotiplay, :spotify_client_id)
     client_secret = Application.get_env(:spotiplay, :spotify_client_secret)
 
     headers = [
       {"Authorization", "Basic #{Base.encode64("#{client_id}:#{client_secret}")}"}
     ]
+
     body = {:form, [grant_type: "client_credentials"]}
+
     HTTPoison.post!("https://accounts.spotify.com/api/token", body, headers).body
-    |> Poison.decode!
+    |> Poison.decode!()
     |> Map.get("access_token")
   end
 end
